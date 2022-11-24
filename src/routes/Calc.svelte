@@ -3,10 +3,11 @@
     import { tweened } from 'svelte/motion';
     import {range} from './range.js';
     import data from './pce.json';
+    import Story from './Story.svelte'
 
-    let dollars = 20;
+    let dollars = 19.99;
     let year_1 = 2022;
-    let year_2 = 1959;
+    let year_2 = 1960;
     let month_1 = 7;
     let month_2 = 0;
 
@@ -36,9 +37,24 @@
     const displayed_dollars = tweened(0);
     $: displayed_dollars.set(real_dollars);
 
-    let begin = 1959;
+    let begin = 1960;
     let end = 2023;
     let step = 1;
+
+    let new_date, old_date;
+
+    $: {if (index_1 > index_2) {
+            new_date = new Date(year_1 + "-" + (month_1 + 1) + "-01");
+            old_date = new Date(year_2 + "-" + (month_2 + 1) + "-01");
+
+        } else if (index_1 < index_2) {
+            new_date = new Date(year_2 + "-" + (month_2 + 1) + "-01");
+            old_date = new Date(year_1 + "-" + (month_1 + 1) + "-01");
+        } else {
+            new_date = new Date("1900-01-01");
+            old_date = new Date("1900-01-01");
+        }
+    }
 
 </script>
 
@@ -48,30 +64,8 @@
     
     <div class ="old calc_element">
         <p>$</p>
-        <input type="number" bind:value={dollars} style= "width: {20 + Math.log(dollars) * 5}px; min-width:50px;">
+        <input type="number" bind:value={dollars} style= "width: {50 + Math.log(dollars) * 3.6}px; min-width:50px;">
 
-        <p>in</p>
-        <select class="month" bind:value={month_1}>
-            {#if year_1 == 2022}
-                {#each months.slice(0,8) as m, i}
-                <option value={i}>{m}</option>
-                {/each}
-            {:else}
-                {#each months as m, i}
-                <option value={i}>{m}</option>
-                {/each}
-            {/if}
-        </select>
-        <select class="year" bind:value={year_1}>
-            {#each range(begin,end,step) as i}
-            <option>{i}</option>
-            {/each}
-        </select>
-    </div>
-    <p class= "equal calc_element">has the same buying power as</p>
-
-    <div class = "new calc_element">
-        <p class = "result">$<strong>{$displayed_dollars.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong></p>
         <p>in</p>
         <select class="month" bind:value={month_2}>
             {#if year_2 == 2022}
@@ -90,9 +84,33 @@
             {/each}
         </select>
     </div>
+    <p class= "equal calc_element">has the same buying power as</p>
+
+    <div class = "new calc_element">
+        <p class = "result">$<strong>{$displayed_dollars.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong></p>
+        <p>in</p>
+        <select class="month" bind:value={month_1}>
+            {#if year_1 == 2022}
+                {#each months.slice(0,8) as m, i}
+                <option value={i}>{m}</option>
+                {/each}
+            {:else}
+                {#each months as m, i}
+                <option value={i}>{m}</option>
+                {/each}
+            {/if}
+        </select>
+        <select class="year" bind:value={year_1}>
+            {#each range(begin,end,step) as i}
+            <option>{i}</option>
+            {/each}
+        </select>
+    </div>
 </div>
 
 <p class="source">Citation: U.S. Bureau of Economic Analysis, Personal Consumption Expenditures: Chain-type Price Index [PCEPI], retrieved from FRED, Federal Reserve Bank of St. Louis; <a href="https://fred.stlouisfed.org/series/PCEPI">https://fred.stlouisfed.org/series/PCEPI</a>, November 17, 2022.</p>
+
+<Story {old_date} {new_date}/>
 
 <style>
 
