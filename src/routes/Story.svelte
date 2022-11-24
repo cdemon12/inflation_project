@@ -1,54 +1,117 @@
 <script>
+  import Scrolly from "./Scrolly.svelte";
+  import Line from "./Line.svelte";
+  let value = 0;
+  const steps = [
+		 "<p>This is the percent change from last year personal consumption expediture.</p>",
+    "<p>This is PCE by itself.</p>",
+  ];
 
-    import Scrolly from "./Scrolly.svelte";
-
-    import { tweened } from "svelte/motion";
-    let number = (tweened(0));
-
-    let currentStep;
-    $: if(currentStep == 0) {
-        number.set(100)
-    } else if (currentStep == 1) {
-        number.set(200)
-    } else if (currentStep == 2) {
-        number.set(300)
-    }
-
+  export let new_date, old_date;
 </script>
 
 <section>
-	<Scrolly bind:value={currentStep}>
-	{#each [1,2,3] as text, i}
-		<div class="step" class:active={currentStep === i}>
-			<div class="step-content">
-				<p>Step {text}</p>
-			</div>
-		</div>
-	{/each}
-	</Scrolly>
+  <div class="section-container">
+    <div class="steps-container">
+      <Scrolly bind:value>
+        {#each steps as text, i}
+          <div class="step" class:active={value === i}>
+            <div class="step-content">{@html text}</div>
+          </div>
+        {/each}
+        <div class="spacer" />
+      </Scrolly>
+    </div>
+    <div class="sticky">
+      <Line {value} {new_date} {old_date}/>
+    </div>
+  </div>
 </section>
 
 <style>
+	:global(body) {
+		overflow-x: hidden;
+	}
+	
+	/* .hero {
+		height: 60vh;
+		display: flex;
+		place-items: center;
+		flex-direction: column;
+		justify-content: center;
+		text-align: center;
+	}
+	
+	.hero h2 {
+		margin-top: 0;
+		font-weight: 200;
+	} */
+	
+  .spacer {
+    height: 40vh;
+  }
+
+  .sticky {
+    position: sticky;
+    top: 10%;
+		flex: 1 1 60%;
+    width: 60%;
+  }
+
+  .section-container {
+    margin-top: 1em;
+    text-align: center;
+    transition: background 100ms;
+    display: flex;
+  }
 
   .step {
-    height: 90vh;
+    height: 80vh;
     display: flex;
     place-items: center;
     justify-content: center;
   }
 
   .step-content {
+    font-size: 1rem;
     background: whitesmoke;
     color: #ccc;
+    border-radius: 5px;
     padding: .5rem 1rem;
-    transition: background 500ms ease, color 500ms ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: background 500ms ease;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, .2);
+    text-align: left;
+		width: 75%;
+		margin: auto;
+		max-width: 500px;
   }
 
 	.step.active .step-content {
-        background: white;
+		background: white;
 		color: black;
 	}
+	
+  .steps-container,
+  .sticky {
+    height: 100%;
+  }
 
+  .steps-container {
+    flex: 1 1 40%;
+    z-index: 10;
+  }
+	
+/* Comment out the following line to always make it 'text-on-top' */
+  @media screen and (max-width: 768px) {
+    .section-container {
+      flex-direction: column-reverse;
+    }
+    .sticky {
+      width: 95%;
+			margin: auto;
+    }
+  }
 </style>
-
