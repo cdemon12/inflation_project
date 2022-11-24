@@ -5,7 +5,7 @@
 	import Story from './Story.svelte';
 	import Calc from './Calc.svelte';
 	import Line from './Line.svelte';
-	import data from './pce.js'
+
 </script>
 
 <svelte:head>
@@ -15,8 +15,9 @@
 
 
 <section>
+
 	<Calc />
-	<Line {data} />
+
 </section>
 
 <style>
@@ -28,7 +29,7 @@
 		flex: 0.6;
 	}
 
-	h1 {
+	/* h1 {
 		width: 100%;
 	}
 
@@ -46,7 +47,7 @@
 		height: 100%;
 		top: 0;
 		display: block;
-	}
+	} */
 	
 	:global(body) {
 		background: whitesmoke;
