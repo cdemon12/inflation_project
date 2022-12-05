@@ -10,4 +10,6 @@ Some elements to be added are:
 - making complete responsive
 - Recommended view is on computer browser.
 
-All precomplied code is availiable here. Thanks!
+Compiled app is at this link: https://inflation-project-ivory.vercel.app/ 
+
+Thanks!
