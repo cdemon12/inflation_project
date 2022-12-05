@@ -1,0 +1,143 @@
+---
+title: "Create inflation data.json"
+---
+
+```{r}
+library(tidyverse)
+library(fredr)
+library(jsonlite)
+library(janitor)
+library(blsR)
+library(ggplot2)
+```
+
+```{r}
+base_dir <- "~/Documents/school/fall_22/dataj/data/"
+
+ids <- list(
+  list("name"="pcepi_raw", "id"="PCEPI","units"="lin"),
+  list("name"="pcepi_pc", "id"="PCEPI", "units"="pc1"),
+  list("name"="pcepi_core_pc", "id"="PCEPILFE", "units"="pc1"),
+  list("name"="pce", "id"="PCE", "units"="lin"),
+  list("name"="cpi", "id"="CPIAUCSL", "units"="lin"),
+  list("name"="cpi_pc", "id"="CPIAUCSL", "units"="pc1"),
+  list("name"="cpi_core_pc", "id"="USACPICORMINMEI", "units"="pc1")
+)
+
+rm(all_data)
+
+for (x in ids) {
+  new_data <- fredr(
+    series_id = x$id,
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("9999-12-31"),
+    frequency = "m",
+    output_type = 1,
+    units = x$units
+  )
+  if (exists("all_data")) {
+      all_data <- all_data %>% 
+        left_join(new_data %>% select(date, value), by="date") %>%
+        rename(!!x$name:=value)
+  } else {
+      all_data <- new_data %>% 
+        select(date, value) %>% 
+        rename(!!x$name:=value)
+  }
+  print(paste0("Success: ", x$name))
+}
+
+all_data %>% write_json("~/Documents/school/fall_22/svelte/inflation_project/src/routes/data.json")
+```
+
+Source: https://apps.bea.gov/iTable/?ReqID=19&step=4&isuri=1&1921=flatfiles
+
+Survey ID: U90100
+
+```{r}
+recon <- read_csv(paste0(base_dir, "recon.csv"))
+
+recon <- recon %>% clean_names()
+
+recon %>% group_by(effect) %>% summarise(sum(mean))
+
+recon_mean <- recon %>% filter(effect=="summary") %>% select(cat,mean, effect)
+
+recon_mean %>% filter(grepl("effect", cat)) %>% ggplot(aes(x=fct_reorder(cat, mean), y=mean)) +
+  geom_bar(stat="identity") + coord_flip()
+
+p <- recon_mean %>% ggplot(aes(y=cat, x=mean)) +
+  geom_bar(stat="identity")
+
+p
+
+# JSON plan - JSON = {PCE, CPI, Effects: {effect: {total: XX, subcat : XX }, effect: {total: XX, subcat : XX }}}
+
+#main
+
+main_0 <- recon_mean %>% filter(!grepl("effect", cat)) %>% filter(cat != "Equals: PCE fixed-weight price index (percent change)") %>% mutate(cat = ifelse(grepl("PCE", cat), "pce", "cpi")) %>% select(cat, mean)
+
+main <- data.frame(t(main_0[-1]))
+colnames(main) <- main_0$cat
+
+#weight
+
+weight_0 <- recon %>% select(cat, effect, mean) %>% filter(effect == "Weight effect" | grepl("Weight effect", cat)) %>% select(cat, mean)
+
+weight <- data.frame(t(weight_0[-1]))
+colnames(weight) <- weight_0$cat
+
+weight <- weight %>% clean_names() %>% rename(total = less_weight_effect_percentage_points)
+
+#scope plus
+
+scope_plus_0 <- recon %>% select(cat, effect, mean, scope_of_pce) %>% filter((effect == "Scope effect" & scope_of_pce == F) | grepl("Plus: Scope effect", cat)) %>% select(cat, mean)
+
+scope_plus <- data.frame(t(scope_plus_0[-1]))
+colnames(scope_plus) <- scope_plus_0$cat
+
+scope_plus <- scope_plus %>% clean_names() %>% rename(total = plus_scope_effect_cpi_items_out_of_scope_of_the_pce_price_index_percentage_points)
+
+#scope less
+
+scope_less_0 <- recon %>% select(cat, effect, mean, scope_of_pce) %>% filter((effect == "Scope effect" & scope_of_pce == T) | grepl("Less: Scope effect", cat)) %>% select(cat, mean)
+
+scope_less <- data.frame(t(scope_less_0[-1]))
+colnames(scope_less) <- scope_less_0$cat
+
+scope_less <- scope_less %>% clean_names() %>% rename(total = less_scope_effect_pce_price_index_items_out_of_scope_of_the_cpi_percentage_points)
+
+# formula 
+
+formula_0 <- recon %>% select(cat, effect, mean, scope_of_pce) %>% filter(effect == "Formula effect" | grepl("Formula effect", cat)) %>% select(cat, mean)
+
+formula <- data.frame(t(formula_0[-1]))
+colnames(formula) <- formula_0$cat
+
+formula <- formula %>% clean_names() %>% rename(total = less_formula_effect_percentage_points)
+
+# other
+
+other_0 <- recon %>% select(cat, effect, mean, scope_of_pce) %>% filter(effect == "Other effect" | grepl("Other effect", cat)) %>% select(cat, mean)
+
+other <- data.frame(t(other_0[-1]))
+colnames(other) <- other_0$cat
+
+other <- other %>% clean_names() %>% rename(total = less_other_effects_percentage_points)
+
+# create one large data frame
+
+
+write_json(main, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/main.json")
+write_json(weight, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/weight.json")
+write_json(scope_less, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/scope_less.json")
+write_json(scope_plus, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/scope_plus.json")
+write_json(formula, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/formula.json")
+write_json(other, "~/Documents/school/fall_22/svelte/inflation_project/src/routes/recon/other.json")
+
+
+# bls_key <- Sys.getenv("BLS_KEY"))
+
+
+
+```
