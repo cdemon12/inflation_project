@@ -1,12 +1,6 @@
 <script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
-	import Story from './Story.svelte';
 	import Calc from './Calc.svelte';
-	import Line from './Line.svelte';
 	import Footer from './Footer.svelte';
-	import Bar  from './Bar.svelte';
 	import StoryRecon from './StoryRecon.svelte';
 	import WIP from './WIP.svelte';
 
