@@ -5,6 +5,9 @@
 	import Story from './Story.svelte';
 	import Calc from './Calc.svelte';
 	import Line from './Line.svelte';
+	import Footer from './Footer.svelte';
+	import Bar  from './Bar.svelte';
+	import StoryRecon from './StoryRecon.svelte';
 
 </script>
 
@@ -17,6 +20,10 @@
 <section>
 
 	<Calc />
+
+	<StoryRecon />
+
+	<Footer />
 
 </section>
 

@@ -88,6 +88,18 @@ button:focus:not(:focus-visible) {
 	outline: none;
 }
 
+.pce {
+    stroke: purple;
+	color: purple;
+	opacity: 50%;
+}
+
+.cpi {
+	stroke: green;
+	color: green;
+	opacity: 50%;
+}
+
 @media (min-width: 720px) {
 	h1 {
 		font-size: 2.4rem;
