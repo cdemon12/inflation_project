@@ -1,4 +1,4 @@
-## 🚧 This project is a work in progress. Please do not share the URL. 🚧
+## 🚧 This project is a work in progress. 🚧
 
 Some elements to be added are:
 
