@@ -1,6 +1,6 @@
 <h3>Methodology</h3>
 
-<p>It was created using Svelte.js, D3.js, R and HTML/CSS. To see the complete code visited my github repo (add link here).</p>
+<p>It was created using Svelte.js, D3.js, R and HTML/CSS. To see the complete code visited <a href="https://github.com/cdemon12/inflation_project">my github repo</a>.</p>
 
 <p>The data was primarily from the Regional Federal Reserve Bank of St. Louis accessed using the "fredr" module.</p>
 
