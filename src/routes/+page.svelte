@@ -8,14 +8,16 @@
 	import Footer from './Footer.svelte';
 	import Bar  from './Bar.svelte';
 	import StoryRecon from './StoryRecon.svelte';
+	import WIP from './WIP.svelte';
 
 </script>
 
 <svelte:head>
-	<title>Home</title>
+	<title>PCEPI Inflation Calculator</title>
 	<meta name="description" content="Svelte demo app" />
 </svelte:head>
 
+<WIP />
 
 <section>
 
