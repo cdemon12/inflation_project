@@ -8,7 +8,6 @@ Some elements to be added are:
 - completed descriptions
 - retrieving data directly from API
 - making complete responsive
-- Recommended view is on computer browser.
 
 Compiled app is at this link: https://inflation-project-ivory.vercel.app/ 
 
